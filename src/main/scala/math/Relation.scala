@@ -7,17 +7,17 @@ package math
  *
  */
 
-trait Relation[T] {
+trait Relation[T, A <: Set[T], B <: Set[T]] {
 
-  def hold(a: Set[T], b: Set[T]): Boolean
+  def hold(a: A, b: B): Boolean
 
-  def conjunct(another: Relation[T]): Relation[T]
-  def disjunct(another: Relation[T]): Relation[T]
-  def complement(): Relation[T]
+  def conjunct(another: Relation[T, A, B]): Relation[T, A, B]
+  def disjunct(another: Relation[T, A, B]): Relation[T, A, B]
+  def complement(): Relation[T, A, B]
 
-  def converse(): Relation[T]
+  def converse(): Relation[T, A, B]
 
-  def composite(another: Relation[T]): Relation[T]
+  def composite[C <: Set[T]](another: Relation[T, B, C]): Relation[T, A, C]
 }
 
 object Relation {
