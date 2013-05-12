@@ -13,8 +13,8 @@ import logic.Forsome
 
 trait Set[T] {
   
-  def forall : Forall[T]
-  def forsome : Forsome[T]
+  val forall: Forall[T] = ???
+  val forsome: Forsome[T] = ???
 
   def contains(entry: T): Boolean
   def includes(another: Set[T]): Boolean
@@ -27,8 +27,8 @@ trait Set[T] {
 
 }
 
-case class Definable[T](val definition: T => Boolean) extends Set[T] {
-
+case class DefinableSet[T](val definition: T => Boolean) extends Set[T] {
+  
   def contains(entry: T): Boolean = definition(entry)
   def includes(another: Set[T]): Boolean = {
     another.forall((anotherElem) => definition(anotherElem))
@@ -36,44 +36,41 @@ case class Definable[T](val definition: T => Boolean) extends Set[T] {
 
   def union(another: Set[T]): Set[T] = {
     another match {
-      case Definable(anotherDefinition) => new Definable({ x => this.definition(x) || anotherDefinition(x) })
+      case DefinableSet(anotherDefinition) => new DefinableSet({ x => this.definition(x) || anotherDefinition(x) })
       case _ => ???
     }
   }
 
   def intersect(another: Set[T]): Set[T] = {
     another match {
-      case Definable(anotherDefinition) => new Definable({ x => this.definition(x) && anotherDefinition(x) })
+      case DefinableSet(anotherDefinition) => new DefinableSet({ x => this.definition(x) && anotherDefinition(x) })
       case _ => ???
     }
   }
 
   def disjoint(another: Set[T]): Set[T] = {
     another match {
-      case Definable(anotherDefinition) => new Definable({ x => this.definition(x) && !anotherDefinition(x) })
+      case DefinableSet(anotherDefinition) => new DefinableSet({ x => this.definition(x) && !anotherDefinition(x) })
       case _ => ???
     }
   }
 
-  def complement(): Set[T] = new Definable({ x => !this.definition(x) })
+  def complement(): Set[T] = new DefinableSet({ x => !this.definition(x) })
 
 }
 
-class Empty[T] extends Definable[T]({ _ => false }: T => Boolean) {
-  def forall: Forall[T] = new Forall[T] {
-    def apply(predicate: T => Boolean): Boolean = true
+class Empty[T] extends DefinableSet[T]({ _ => false }) {
+  object Qualification {
+    val forall : Forall[T] = new Forall[T] {
+      def apply(predicate: T => Boolean): Boolean = true
+    }
+    val forsome : Forsome[T] = new Forsome[T] {
+      def apply(predicate: T => Boolean): Boolean = false
+    }
   }
-  def forsome: Forsome[T] = new Forsome[T] {
-    def apply(predicate: T => Boolean): Boolean = false
-  }
-}
-
-class Universal[T] extends Definable[T]({ _ => true }: T => Boolean) {
 }
 
 object Set {
-
-  val empty: Empty[Any] = new Empty[Any]()
-
+  val emptySet: Empty[Any] = new Empty[Any]()
 }
 
