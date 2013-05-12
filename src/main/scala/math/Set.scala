@@ -21,8 +21,8 @@ trait Set[T] {
   def contains( entry : T ) : Boolean
   def includes( another : Set[T] ) : Boolean
 
-  def union( another : Set[T] ) : Set[T]
   def intersect( another : Set[T] ) : Set[T]
+  def union( another : Set[T] ) : Set[T]
   def disjoint( another : Set[T] ) : Set[T]
 
   def complement() : Set[T]
@@ -37,16 +37,16 @@ case class DefinableSet[T]( val definition : T => Boolean ) extends Set[T] {
     another.forall( ( anotherElem ) => definition( anotherElem ) )
   }
 
-  def union( another : Set[T] ) : Set[T] = {
+  def intersect( another : Set[T] ) : Set[T] = {
     another match {
-      case DefinableSet( anotherDefinition ) => new DefinableSet( { x => this.definition( x ) || anotherDefinition( x ) } )
+      case DefinableSet( anotherDefinition ) => new DefinableSet( { x => this.definition( x ) && anotherDefinition( x ) } )
       case _                                 => ???
     }
   }
 
-  def intersect( another : Set[T] ) : Set[T] = {
+  def union( another : Set[T] ) : Set[T] = {
     another match {
-      case DefinableSet( anotherDefinition ) => new DefinableSet( { x => this.definition( x ) && anotherDefinition( x ) } )
+      case DefinableSet( anotherDefinition ) => new DefinableSet( { x => this.definition( x ) || anotherDefinition( x ) } )
       case _                                 => ???
     }
   }
