@@ -1,7 +1,7 @@
 package logic
 
-trait Forall[U] {
+trait Forall[T] {
 
-  def apply(predicate: U => Boolean): Boolean
+  def apply(predicate: T => Boolean): Boolean
 
 }
